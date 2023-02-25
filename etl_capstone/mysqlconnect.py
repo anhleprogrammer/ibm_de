@@ -1,8 +1,10 @@
 import mysql.connector
 import config
+from dotenv import load_dotenv
+import os
 
 connection = mysql.connector.connect(
-    user='root', password=config.password, host='127.0.0.1', database='sales')
+    user='root', password=os.getenv('MYSQL_PASS'), host='127.0.0.1', database='sales')
 
 if connection.is_connected():
     print('Connected')

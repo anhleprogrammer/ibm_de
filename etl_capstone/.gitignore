@@ -1,2 +1,4 @@
 env
 config.py
+anh_accessKeys.csv
+.env
