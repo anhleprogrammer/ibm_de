@@ -9,9 +9,9 @@ def connectMysql():
         user='root', password=os.getenv('MYSQL_PASS'), host='127.0.0.1', database='sales')
 
     if connection.is_connected():
-        print('Connected')
+        print('Connected to mysql')
     else:
-        print('Failed to connect')
+        print('Failed to connect to mysql')
     return connection
 
 
@@ -27,8 +27,6 @@ def drop_table():
 
 
 # create table
-drop_table()
-
 
 def create_table():
     SQL = """CREATE TABLE IF NOT EXISTS products(
@@ -71,3 +69,4 @@ def getAllData():
 
 # close connection
 connection.close()
+cursor.close()

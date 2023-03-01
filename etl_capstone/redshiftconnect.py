@@ -21,20 +21,24 @@ def connectRedshift():
             user=user,
             password=password
         )
-        print('Connected')
+        print('Connected to redshift')
         return conn
     except psycopg2.Error as e:
-        print('Unable to connect!')
+        print('Failed to connect to redshift!', e)
+        return
 
 
 conn = connectRedshift()
 cur = conn.cursor()
+
 # create table
 
-SQL = """CREATE TABLE IF NOT EXISTS sales_data(rowid INTEGER PRIMARY KEY NOT NULL,product_id INTEGER NOT NULL,category_id INTEGER NOT NULL, quantity INTEGER NOT NULL)"""
-cur.execute(SQL)
-conn.commit()
-print("Table created")
+
+def createTable():
+    SQL = """CREATE TABLE IF NOT EXISTS sales_data(rowid INTEGER PRIMARY KEY NOT NULL,product_id INTEGER NOT NULL,category_id INTEGER NOT NULL, quantity INTEGER NOT NULL)"""
+    cur.execute(SQL)
+    conn.commit()
+    print("Table created")
 
 
 # query data

@@ -24,7 +24,6 @@ def get_last_rowid():
     last_rowid = result[0]
     print("Last row id on production datawarehouse = ", last_rowid)
     return last_rowid
-    pass
 
 
 # List out all records in MySQL database with rowid greater than the one on the Data warehouse
@@ -37,11 +36,9 @@ def get_latest_records(rowid):
     mysqlCur.execute(SQL, (rowid,))
     latestrecords = mysqlCur.fetchall()
     return latestrecords
-    pass
 
 
 new_records = get_latest_records(last_rowid)
-print(new_records)
 print("New rows to be inserted on staging datawarehouse = ", len(new_records))
 
 # Insert the additional records from MySQL into redshift data warehouse.
@@ -49,12 +46,22 @@ print("New rows to be inserted on staging datawarehouse = ", len(new_records))
 
 
 def insert_records(records):
-    # SQL = """insert rowid from sales_data s where rowid > %s"""
-    # mysqlCur.execute(SQL, (rowid,))
-    # latestrecords = mysqlCur.fetchall()
-    # return latestrecords
-    pass
+    new_records = []
+    for record in records:
+        SQL = """SELECT * from sales_data where rowid = %s"""
+        mysqlCur.execute(SQL, (record[0],))
+        result = mysqlCur.fetchone()
+        INSERT = """INSERT INTO sales_data (rowid, product_id, category_id, quantity) VALUES (%s,%s,%s,%s)"""
+        redshiftCur.execute(INSERT, result)
+        new_records.append(result)
+    redshiftConnect.commit()
+    return new_records
 
 
-insert_records(new_records)
-print("New rows inserted into production datawarehouse = ", len(new_records))
+insertedRecords = insert_records(new_records)
+print(insertedRecords)
+print("New rows inserted into production datawarehouse = ", len(insertedRecords))
+mysqlConnect.close()
+mysqlCur.close()
+redshiftConnect.close()
+redshiftCur.close()
